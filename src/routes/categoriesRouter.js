@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { getCategories } from "./../controllers/categoriesController.js";
+import checkIfCategoryExists from "../middlewares/categories/checkIfCategoryExists.js";
+import { createCategory, getCategories } from "./../controllers/categoriesController.js";
 import validateCategory from "./../middlewares/categories/validateCategory.js";
 
 const categoriesRouter = Router();

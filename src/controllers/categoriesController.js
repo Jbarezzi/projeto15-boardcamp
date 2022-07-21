@@ -9,4 +9,14 @@ async function getCategories(_req, res) {
     }
 }
 
-export { getCategories };
+async function createCategory(req, res) {
+    const { name } = req.body;
+    try {
+        await connection.query("INSERT INTO categories (name) VALUES ($1)", [name]);
+        res.sendStatus(201);
+    } catch {
+        res.sendStatus(500);
+    }
+}
+
+export { getCategories, createCategory };
