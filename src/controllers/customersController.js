@@ -17,6 +17,9 @@ async function getCustomersById(req, res) {
     try {
         const query = `SELECT * FROM customers WHERE id = '${id}'`;
         const { rows: customer } = await connection.query(query);
+        if(!!customer) {
+            return res.sendStatus(404);
+        }
         res.send(customer);
     } catch {
         res.sendStatus(500);
