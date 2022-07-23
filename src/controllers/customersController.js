@@ -12,4 +12,15 @@ async function getCustomers(req, res) {
     }
 }
 
-export { getCustomers };
+async function getCustomersById(req, res) {
+    const id = req.params.id;
+    try {
+        const query = `SELECT * FROM customers WHERE id = '${id}'`;
+        const { rows: customer } = await connection.query(query);
+        res.send(customer);
+    } catch {
+        res.sendStatus(500);
+    }
+}
+
+export { getCustomers, getCustomersById };
