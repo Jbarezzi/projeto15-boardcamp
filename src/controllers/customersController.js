@@ -5,6 +5,7 @@ async function getCustomers(req, res) {
     const { cpf } = req.query;
     try {
         const query = !!cpf ? `SELECT * FROM customers WHERE cpf LIKE '${cpf}%';` : "SELECT * FROM customers;";
+        // TODO: implement bind params
         const { rows: customers } = await connection.query(query);
         res.send(customers);
     } catch {
@@ -15,7 +16,8 @@ async function getCustomers(req, res) {
 async function getCustomersById(req, res) {
     const id = req.params.id;
     try {
-        const query = `SELECT * FROM customers WHERE id = '${id}'`;
+        const query = `SELECT * FROM customers WHERE id = '${id}';`;
+        // TODO: implement bind params
         const { rows: customer } = await connection.query(query);
         if(!!customer) {
             return res.sendStatus(404);
@@ -26,4 +28,15 @@ async function getCustomersById(req, res) {
     }
 }
 
-export { getCustomers, getCustomersById };
+async function createCustomer(req, res) {
+    const { name, phone, cpf, birthday } = req.body;
+    try {
+        const query = ('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
+        connection.query(query);
+        res.sendStatus(201);
+    } catch {
+        res.sendStatus(500);
+    }
+}
+
+export { getCustomers, getCustomersById, createCustomer };
