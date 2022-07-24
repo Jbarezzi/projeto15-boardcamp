@@ -13,8 +13,8 @@ async function getCategories(_req, res) {
 function createCategory(req, res) {
     const { name } = req.body;
     try {
-        const query = `"INSERT INTO categories (name) VALUES ($1);", ${[name]}`;
-        connection.query(query);
+        const query = 'INSERT INTO categories (name) VALUES ($1);';
+        connection.query(query, [name]);
         res.sendStatus(201);
     } catch {
         res.sendStatus(500);
