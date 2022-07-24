@@ -20,4 +20,10 @@ const customerSchema = Joi.object({
 });
 // TODO: implement Max Date
 
-export { categorySchema, gameSchema, customerSchema };
+const rentalSchema = Joi.object({
+    daysRented: Joi.number().positive().required(),
+    customerId: Joi.number().required(),
+    gameId: Joi.number().required(),
+});
+
+export { categorySchema, gameSchema, customerSchema, rentalSchema };
