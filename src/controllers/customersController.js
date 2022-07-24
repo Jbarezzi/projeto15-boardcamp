@@ -29,8 +29,8 @@ async function getCustomersById(req, res) {
 function createCustomer(req, res) {
     const { name, phone, cpf, birthday } = req.body;
     try {
-        const query = ('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
-        connection.query(query);
+        const query = "INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)";
+        connection.query(query, [name, phone, cpf, birthday]);
         res.sendStatus(201);
     } catch {
         res.sendStatus(500);
@@ -41,8 +41,8 @@ function updateCustomer(req, res) {
     const { name, phone, cpf, birthday } = req.body;
     const id = req.params.id;
     try {
-        const query = ("UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4) WHERE id = '$5'", [name, phone, cpf, birthday, id]);
-        connection.query(query);
+        const query = "UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4) WHERE id = '$5'";
+        connection.query(query, [name, phone, cpf, birthday, id]);
         res.sendStatus(200);
     } catch {
         res.sendStatus(500);
