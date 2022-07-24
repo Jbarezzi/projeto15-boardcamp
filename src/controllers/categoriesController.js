@@ -2,17 +2,19 @@ import connection from "./../database/postgres.js";
 
 async function getCategories(_req, res) {
     try {
-        const { rows: categories } = await connection.query("SELECT * FROM categories;");
+        const query = "SELECT * FROM categories;";
+        const { rows: categories } = await connection.query(query);
         res.send(categories);
     } catch {
         res.sendStatus(500);
     }
 }
 
-async function createCategory(req, res) {
+function createCategory(req, res) {
     const { name } = req.body;
     try {
-        await connection.query("INSERT INTO categories (name) VALUES ($1)", [name]);
+        const query = `"INSERT INTO categories (name) VALUES ($1);", ${[name]}`;
+        connection.query(query);
         res.sendStatus(201);
     } catch {
         res.sendStatus(500);
