@@ -3,10 +3,10 @@ import connection from "./../database/postgres.js"
 async function getGames(req, res) {
     const { name } = req.query;
     try {
-        const filter = !!name ? "WHERE games.name ILIKE $1;" : ";";
+        const filter = !!name ? "WHERE games.name ILIKE $1%;" : ";";
         // TODO: fix filter
         const query = `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id = "categoryId" ${filter}`;
-        const {rows: games} = await connection.query(query);
+        const {rows: games} = await connection.query(query, !!name ? [name] : null);
         res.send(games);
     } catch {
         res.sendStatus(500);

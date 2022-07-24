@@ -15,5 +15,10 @@ async function getRentals(req, res) {
         res.sendStatus(500);
     }
 }
+// TODO: implement query string search
+
+async function createRental(req, res) {
+    
+}
 
 export { getRentals };
