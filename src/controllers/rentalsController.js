@@ -4,20 +4,22 @@ import dayjs from "dayjs";
 async function getRentals(req, res) {
     const { customerId, gameId } = req.query;
     try {
+        const filterCustomer = !!customerId ? `WHERE rentals."customerId" = $1` : "",
+            filterGame = !!gameId ? `WHERE rentals."gameId" = $2;` : ";",
+            and = !!gameId && !!customerId ? "AND" : "";
         const query = `SELECT rentals.*, 
                     json_build_object('id', customers.id, 'name', customers.name) AS customer,
                     json_build_object('id', games.id, 'name', games.name, "categoryId", games."categoryId", 'categoryName', categories.name) AS game
                     FROM rentals
                     JOIN customers ON rentals."customerId" = customers.id
                     JOIN games ON rentals."gameId" = games.id
-                    JOIN categories ON games."categoryId" = categories.id`;
-        const { rows: rentals } = await connection.query(query);
+                    JOIN categories ON games."categoryId" = categories.id ${filterCustomer} ${and} ${filterGame}`;
+        const { rows: rentals } = await connection.query(query, [!!customerId ? customerId : null, !!gameId ? gameId : null]);
         res.send(rentals);
     } catch {
         res.sendStatus(500);
     }
 }
-// TODO: implement query string search
 
 async function createRental(req, res) {
     const rental = req.body,
