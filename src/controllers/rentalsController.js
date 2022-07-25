@@ -1,6 +1,8 @@
 import connection from "../database/postgres.js";
+import dayjs from "dayjs";
 
 async function getRentals(req, res) {
+    const { customerId, gameId } = req.query;
     try {
         const query = `SELECT rentals.*, 
                     json_build_object('id', customers.id, 'name', customers.name) AS customer,
@@ -18,7 +20,33 @@ async function getRentals(req, res) {
 // TODO: implement query string search
 
 async function createRental(req, res) {
-    
+    const rental = req.body,
+        pricePerDay = res.locals.pricePerDay,
+        newRental = {
+            ...rental,
+            rentDate: dayjs().format("DD-MM-YYYY"),
+            originalPrice: rental.daysRented * pricePerDay,
+            returnDate: null,
+            delayFee: null,
+        },
+        query = "INSERT INTO rentals ('delayFee', 'returnDate', 'originalPrice', 'rentDate', 'customerId', 'gameId', 'daysRented') VALUES ($1, $2, $3, $4, $5, $6, $7);";
+        await connection.query(query, [newRental.delayFee, newRental.returnDate, newRental.originalPrice, newRental.rentDate, newRental.customerId, newRental.gameId, newRental.daysRented]);
+        res.sendStatus(201);      
 }
 
-export { getRentals };
+async function deleteRental(req, res) {
+    const { id } = req.params,
+        query = "DELETE FROM rentals WHERE id = $1;";
+    await connection.query(query, [id]);
+    res.sendStatus(200);
+}
+
+async function returnRental(req, res) {
+    try {
+        res.sendStatus(200)
+    } catch {
+        res.sendStatus(500);
+    }
+}
+
+export { getRentals, createRental, deleteRental };
