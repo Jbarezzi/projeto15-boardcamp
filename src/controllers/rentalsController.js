@@ -29,7 +29,7 @@ async function createRental(req, res) {
             returnDate: null,
             delayFee: null,
         },
-        query = "INSERT INTO rentals ('delayFee', 'returnDate', 'originalPrice', 'rentDate', 'customerId', 'gameId', 'daysRented') VALUES ($1, $2, $3, $4, $5, $6, $7);";
+        query = `INSERT INTO rentals ("delayFee", "returnDate", "originalPrice", "rentDate", "customerId", "gameId", "daysRented") VALUES ($1, $2, $3, $4, $5, $6, $7);`;
         await connection.query(query, [newRental.delayFee, newRental.returnDate, newRental.originalPrice, newRental.rentDate, newRental.customerId, newRental.gameId, newRental.daysRented]);
         res.sendStatus(201);      
 }
@@ -42,11 +42,17 @@ async function deleteRental(req, res) {
 }
 
 async function returnRental(req, res) {
+    const daysDelayed = res.locals.daysDelayed || 0;
+    const { id } = req.params;
     try {
+        const query = `SELECT rentals.*, games."pricePerDay" FROM rentals JOIN games ON "gameId" = games.id WHERE rentals.id = $1;`;
+        const { rows: rental } = await connection.query(query, [id]);
+        const updateQuery = `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3;`;
+        await connection.query(updateQuery, [dayjs().format("DD-MM-YYYY"), daysDelayed * rental[0].pricePerDay, id]);
         res.sendStatus(200)
     } catch {
         res.sendStatus(500);
     }
 }
 
-export { getRentals, createRental, deleteRental };
+export { getRentals, createRental, deleteRental, returnRental };
